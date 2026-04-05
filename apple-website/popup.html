@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Info Popup</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            /* Basic styling for the underlying page to show the overlay effect */
+            background-color: #f0f2f5;
+            height: 100vh;
+        }
+
+        /* The darkened background overlay */
+        .popup-overlay {
+            display: none;
+            /* Hidden strictly by default until JS triggers it */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.55);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            /* Nice fade-in transition */
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* The actual popup card */
+        .popup-container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 360px;
+            padding: 35px 20px 25px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            animation: slideUp 0.4s ease forwards;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+            }
+
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: #666;
+            cursor: pointer;
+            line-height: 1;
+            padding: 5px;
+            transition: color 0.2s;
+        }
+
+        .close-btn:hover {
+            color: #000;
+        }
+
+        .popup-title {
+            color: #003580;
+            /* Standard Booking.com blue */
+            font-size: 23px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            line-height: 1.3;
+        }
+
+        .popup-red-text {
+            color: #c00000;
+            font-size: 14px;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .popup-instruction {
+            color: #000000;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .popup-phone {
+            display: block;
+            color: #003580;
+            font-size: 26px;
+            font-weight: 700;
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+
+        @keyframes pulseRing {
+            0% {
+                box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 15px rgba(37, 211, 102, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
+            }
+        }
+
+        @keyframes wiggle {
+
+            0%,
+            100% {
+                transform: rotate(0deg);
+            }
+
+            10%,
+            30%,
+            50% {
+                transform: rotate(-10deg);
+            }
+
+            20%,
+            40% {
+                transform: rotate(10deg);
+            }
+
+            60% {
+                transform: rotate(0deg);
+            }
+        }
+
+        .call-icon-btn {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 2px solid #aecdf2;
+            text-decoration: none;
+            margin-bottom: 20px;
+            transition: transform 0.2s, background-color 0.2s;
+            animation: pulseRing 2s infinite;
+        }
+
+        .call-icon-btn:active {
+            transform: scale(0.95);
+            background-color: #f7fbff;
+        }
+
+        .phone-icon {
+            width: 35px;
+            height: 35px;
+            fill: #25d366;
+            /* Vibrant green like WhatsApp/Call icons */
+            animation: wiggle 2s infinite;
+        }
+
+        .popup-discount-title {
+            color: #000000;
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .popup-discount-sub {
+            color: #777777;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .primary-call-btn {
+            display: block;
+            background-color: #00224f;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            padding: 15px 10px;
+            border-radius: 8px;
+            line-height: 1.4;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .primary-call-btn:active {
+            background-color: #001838;
+            transform: scale(0.98);
+        }
+
+        /* Essential Responsive Sizing */
+        @media only screen and (max-width: 380px) {
+            .popup-container {
+                padding: 30px 15px 20px;
+            }
+
+            .popup-title {
+                font-size: 20px;
+            }
+
+            .popup-red-text {
+                font-size: 13px;
+            }
+
+            .popup-instruction {
+                font-size: 14px;
+            }
+
+            .popup-phone {
+                font-size: 22px;
+            }
+
+            .call-icon-btn {
+                width: 65px;
+                height: 65px;
+            }
+
+            .phone-icon {
+                width: 28px;
+                height: 28px;
+            }
+
+            .popup-discount-title {
+                font-size: 15px;
+            }
+
+            .popup-discount-sub {
+                font-size: 13px;
+                margin-bottom: 15px;
+            }
+
+            .primary-call-btn {
+                font-size: 14px;
+                padding: 13px 8px;
+            }
+
+            /* Remove manual line breaks on tiny screens to avoid disconnected single words */
+            .popup-title br,
+            .popup-red-text br,
+            .popup-instruction br,
+            .primary-call-btn br {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Popup Structure -->
+    <div class="popup-overlay" id="callPopup">
+        <div class="popup-container">
+            <button class="close-btn" id="closePopup" aria-label="Close">&#10005;</button>
+
+            <h2 class="popup-title">Willkommen bei Booking<br>Info</h2>
+
+            <p class="popup-red-text">Möchten Sie eine neue Buchung, Änderung<br>oder Stornierung vornehmen?</p>
+
+            <p class="popup-instruction">Klicken Sie hier, um unseren<br>spezialisierten Agenten anzurufen.</p>
+
+            <!-- tel: links will automatically trigger the phone dialer -->
+            <a href="tel:+496920085343" class="popup-phone">+49 6920085343</a>
+
+            <a href="tel:+496920085343" class="call-icon-btn" aria-label="Call Now">
+                <svg viewBox="0 0 24 24" class="phone-icon">
+                    <path
+                        d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" />
+                </svg>
+            </a>
+
+            <p class="popup-discount-title">Sonderangebote mit Rabatt</p>
+            <p class="popup-discount-sub">Nur telefonisch verfügbar</p>
+
+            <a href="tel:+496920085343" class="primary-call-btn">
+                Rufen Sie uns an und sparen<br>Sie bis zu 60%!
+            </a>
+        </div>
+    </div>
+
+    <!-- JavaScript to handle showing/hiding the popup -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const popup = document.getElementById('callPopup');
+            const closeBtn = document.getElementById('closePopup');
+
+            // 1. Show popup 800ms after the page loads just like a regular promo popup
+            setTimeout(function () {
+                popup.style.display = 'flex';
+            }, 800);
+
+            // 2. Close the popup when the 'X' button is clicked
+            closeBtn.addEventListener('click', function () {
+                popup.style.display = 'none';
+            });
+
+            // 3. Optional: Close if user clicks strictly outside the popup window
+            popup.addEventListener('click', function (e) {
+                if (e.target === popup) {
+                    popup.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
