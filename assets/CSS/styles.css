@@ -632,6 +632,35 @@ a:hover {
     to { opacity: 1; }
 }
 
+/* Global entry and scroll reveal animations */
+@keyframes fadeInEntry {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-entry {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInEntry 0.8s ease-out forwards;
+}
+
+.reveal-block {
+    opacity: 0;
+    transform: translateY(15px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.reveal-block.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 .popup-container {
     background-color: #ffffff;
     border-radius: 12px;
