@@ -426,9 +426,22 @@ a:hover {
 }
 .footer-breadcrumbs a {
     color: #6e6e73;
+    transition: color 0.15s ease;
 }
 .footer-breadcrumbs a:hover {
+    color: #1d1d1f;
     text-decoration: underline;
+}
+
+.footer-breadcrumbs .separator {
+    color: #d2d2d7;
+    font-size: 14px;
+    margin: 0 2px;
+    user-select: none;
+}
+
+.footer-breadcrumbs span:last-child {
+    color: #1d1d1f;
 }
 
 .footer-breadcrumbs svg {
